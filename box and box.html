@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            box and box 
+        </title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: rgb(0, 0, 0);
+            }
+            canvas {
+                border: 2px solid lawngreen;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="gameCanvas" width="1000" height="800"></canvas>
+        <script>
+            const canvas = document.getElementById("gameCanvas");
+            var ctx = canvas.getContext("2d");
+
+            canvas.addEventListener("mousemove", (event) => {
+            const x_ = event.offsetX;
+            const y_ = event.offsetY;
+            });
+
+            
+
+            function draw(){
+                for (var i=box; i>-1; i-=1){
+                ctx.fillStyle = color[i];
+                ctx.fillRect(box_x[i],box_y[i],50,50);
+                ctx.fillStyle = "black";
+                ctx.font = "30px Arial";
+                ctx.fillText(box_num[i],box_x[i] + 17, box_y[i] + 35);
+                }
+                ctx.fillStyle = "lawngreen";
+                ctx.font = "80px Arial";
+                ctx.fillText("Destroy it!",350,100);
+            }
+
+            function click(){
+                document.addEventListener('keydown', function(event){
+                    if (event.key>="1" && event.key<="5" && doun=="NO"){
+                        var key = event.key;
+                        color[parseInt(key)-1]="blue";
+                        time[parseInt(key)-1]=5;
+                        doun="YES"
+                        
+                    }
+                });
+            }
+            function timer(){
+                for (var i=box; i>-1; i-=1){
+                    if (time[i] === 0){
+                        color[i]="lawngreen";
+                        time[i]=0;
+                    }
+                }
+            }
+            function redbox(){
+                var num=redbox_num;
+                var y=redbox_y;
+                for (var i=num.length; i>-1; i-=1){
+                    redbox_y[i]+=speed;
+                    ctx.fillStyle="red";
+                    ctx.fillRect(200*num[i]-100,y[i+1],50,50);
+                    
+                }
+            }
+            function back(){
+                document.addEventListener('keydown',function(event){
+                    var key=parseInt(event.key);
+                    var num=redbox_num;
+                    var y=redbox_y;
+                    for (var i=redbox_num.length; i>-1; i-=1){
+                        if (num[i]==key){
+                            if (y[i+1]<=745 && y[i+1]>=655){
+                                console.log(point)
+                                redbox_num.shift();
+                                redbox_y.shift();
+                                var random=Math.floor(Math.random()*(4-1 + 1))+1;
+                                if (random==1){
+                                    ting1.play();
+                                }if (random==2){
+                                    ting2.play();
+                                }if (random==3){
+                                    ting3.play();
+                                }if (random==4){
+                                    ting4.play();
+                                }
+                                point+=1;
+                            }
+                        }
+                    }
+                });
+            }
+            function spring(){
+                for (var i=redbox_num.length; i>-1; i-=1){
+                    if (redbox_y[i+1]>745){
+                        redbox_num.shift();
+                        redbox_y.shift();
+                        bomb.play();
+                        fail+=1;
+                    }
+                }
+            }
+            function make_redbox(){
+                if (timed<=0){
+                    var random=Math.floor(Math.random()*(5-1 + 1))+1;
+                    timed=50;
+                    redbox_num.push(random);
+                    redbox_y.push(10);
+                }
+            }
+            function math_point(){
+                ctx.fillStyle="lawngreen"
+                ctx.font="30px Arial";
+                ctx.fillText(String(point),900,50);
+            }
+            function game(){
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+
+                draw();
+                timer();
+                click();
+                redbox();
+                back();
+                spring();
+                make_redbox();
+                math_point();
+
+                for (var i=box; i>-1; i-=1){
+                    if (time[i]>0){
+                    time[i]=time[i]-1;
+                    }
+                }
+                if (time[0]+time[1]+time[2]+time[3]+time[4]==0){
+                    doun="NO";
+                }
+                
+                timed-=time_speed;
+
+                if (point==1){
+                    sounds.play();
+                }
+
+                if (fail<25){
+                    requestAnimationFrame(game);
+                }else{
+                    alert('Final Score--\nFail:25\nScore:' + String(point));
+                }
+            }
+
+            var box=4;
+            var box_x=[100,300,500,700,900];
+            var box_y=[700,700,700,700,700];
+            var box_num=[1,2,3,4,5];
+            var color=["lawngreen","lawngreen","lawngreen","lawngreen","lawngreen"];
+            var time=[0,0,0,0,0];
+            var bomb = new Audio('sound/bomb.mp3');
+            var kick = new Audio('sound/kick.mp3');
+            var ting1 = new Audio('sound/1.mp3');
+            var ting2 = new Audio('sound/2.mp3');
+            var ting3 = new Audio('sound/3.mp3');
+            var ting4 = new Audio('sound/4.mp3');
+            var redbox_num=[3];
+            var redbox_y=[10];
+            var timed=50;
+            var time_speed=2;
+            var speed=15;
+            var point=0;
+            var fail=0;
+            var doun="NO"
+            
+            game();
+        </script>
+
+    </body>
+</html>
